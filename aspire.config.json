@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "UptimeMonitor.AppHost/UptimeMonitor.AppHost.csproj"
+  }
+}

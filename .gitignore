@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.aspire/
+.vs/
+.vscode/
+*.user
+*.suo
+TestResults/
+artifacts/
+.DS_Store
