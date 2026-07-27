@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/UptimeMonitor.Domain/UptimeMonitor.Domain.csproj" />
     <ProjectReference Include="..\..\src\UptimeMonitor.Api\UptimeMonitor.Api.csproj" />
   </ItemGroup>
 
