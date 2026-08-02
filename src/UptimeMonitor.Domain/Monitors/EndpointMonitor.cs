@@ -2,6 +2,7 @@ namespace UptimeMonitor.Domain.Monitors
 {
     public sealed class EndpointMonitor
     {
+        #region Constructors
         // A monitor represents a single endpoint that is being monitored for uptime and performance.
         // It contains information about the endpoint, such as its name, URL, check interval, timeout,
         // expected status code, and other relevant properties.
@@ -18,7 +19,9 @@ namespace UptimeMonitor.Domain.Monitors
             CreatedAt = utcNow;
             UpdatedAt = utcNow;
         }
+        #endregion
 
+        #region Properties
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Uri Endpoint { get; set; }
@@ -29,5 +32,6 @@ namespace UptimeMonitor.Domain.Monitors
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
         public bool IsActive { get; set; }
+        #endregion
     }
 }

@@ -2,6 +2,7 @@ namespace UptimeMonitor.Domain.MonitorChecks
 {
     public sealed class MonitorCheck
     {
+        #region Constructors
         // A monitor check represents a single check performed on a monitor endpoint. 
         // It contains information about the check, such as the monitor ID, timestamp, 
         // response time, status code, and other relevant properties.
@@ -20,7 +21,9 @@ namespace UptimeMonitor.Domain.MonitorChecks
             StatusCode = statusCode;
             ExpectedStatusCode = expectedStatusCode;
         }
+        #endregion
 
+        #region Properties
         public Guid Id { get; }
         public Guid MonitorId { get; }
         public DateTime CheckedAt { get; }
@@ -28,5 +31,6 @@ namespace UptimeMonitor.Domain.MonitorChecks
         public int StatusCode { get; }
         public int ExpectedStatusCode { get; }  // Snapshot of expectation when check ran. 
         public bool IsSuccess => StatusCode == ExpectedStatusCode; // Derived from the monitor’s expected status rather than manually set.
+        #endregion
     }
 }

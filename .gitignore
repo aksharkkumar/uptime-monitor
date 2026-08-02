@@ -8,3 +8,11 @@
 TestResults/
 artifacts/
 .DS_Store
+.env
+.env.*
+!.env.example
+
+appsettings.Local.json
+appsettings.*.Local.json
+
+secret.json

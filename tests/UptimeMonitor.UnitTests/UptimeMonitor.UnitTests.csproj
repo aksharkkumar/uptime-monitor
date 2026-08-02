@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
@@ -21,6 +22,22 @@
   <ItemGroup>
     <ProjectReference Include="../../src/UptimeMonitor.Domain/UptimeMonitor.Domain.csproj" />
     <ProjectReference Include="..\..\src\UptimeMonitor.Api\UptimeMonitor.Api.csproj" />
+    <ProjectReference Include="../../src/UptimeMonitor.Infrastructure/UptimeMonitor.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../src/UptimeMonitor.Api/appsettings.json"
+          Link="TestSettings/Api/appsettings.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/UptimeMonitor.Api/appsettings.Development.json"
+          Link="TestSettings/Api/appsettings.Development.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/UptimeMonitor.Worker/appsettings.json"
+          Link="TestSettings/Worker/appsettings.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../src/UptimeMonitor.Worker/appsettings.Development.json"
+          Link="TestSettings/Worker/appsettings.Development.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
