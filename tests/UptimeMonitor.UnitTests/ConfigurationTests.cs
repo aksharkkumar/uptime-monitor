@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using UptimeMonitor.Infrastructure;
 using UptimeMonitor.Infrastructure.Configuration;
@@ -116,8 +117,14 @@ public sealed class ConfigurationTests
 
     private static ServiceProvider BuildServiceProvider(IConfiguration configuration)
     {
-        var services = new ServiceCollection();
-        services.AddInfrastructure(configuration);
-        return services.BuildServiceProvider();
+        var builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:UptimeMonitor"] = "Host=localhost;Database=uptime_monitor"
+        });
+        builder.Configuration.AddConfiguration(configuration);
+        builder.AddInfrastructure();
+
+        return builder.Services.BuildServiceProvider();
     }
 }

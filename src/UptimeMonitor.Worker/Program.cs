@@ -3,7 +3,7 @@ using UptimeMonitor.Infrastructure;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.AddInfrastructure();
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

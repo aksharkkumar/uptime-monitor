@@ -1,27 +1,23 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using UptimeMonitor.Infrastructure.Configuration;
+using UptimeMonitor.Infrastructure.Persistence;
 
 namespace UptimeMonitor.Infrastructure;
+
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IHostApplicationBuilder AddInfrastructure(
+        this IHostApplicationBuilder builder)
     {
-        // TODO: Add InvalidOperationException once DB persistence is added   
-        var connectionString = configuration.GetConnectionString("UptimeMonitor"); 
-        
-        services
+        builder.AddNpgsqlDbContext<UptimeMonitorDbContext>("UptimeMonitor");
+
+        builder.Services
             .AddOptions<AlertSettings>()
-            .Bind(configuration.GetSection(AlertSettings.SectionName))
+            .Bind(builder.Configuration.GetSection(AlertSettings.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        // TODO: Add database registration when DbContext exists
-        // services.AddDbContext<UptimeMonitorDbContext>(options => 
-        //      options.UseNpgsql(connectionString));
-
-        return services;
+        return builder;
     }
 }

@@ -4,7 +4,7 @@ using UptimeMonitor.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.AddInfrastructure();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
