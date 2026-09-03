@@ -11,4 +11,15 @@ public sealed class UptimeMonitorDbContext(
     public DbSet<EndpointMonitor> Monitors => Set<EndpointMonitor>();
     public DbSet<MonitorCheck> MonitorChecks => Set<MonitorCheck>();
     public DbSet<MonitorEvent> MonitorEvents => Set<MonitorEvent>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasPostgresEnum(
+            "monitor_event_type",
+            ["monitor_down", "monitor_recovered", "slow_response", "tls_certificate_expiring"]);
+
+        modelBuilder.ApplyConfiguration(new EndpointMonitorConfiguration());
+        modelBuilder.ApplyConfiguration(new MonitorCheckConfiguration());
+        modelBuilder.ApplyConfiguration(new MonitorEventConfiguration());
+    }
 }

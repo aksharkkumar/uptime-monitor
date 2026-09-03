@@ -69,7 +69,7 @@ public sealed class MonitorCheckTests
         var exception = Assert.Throws<ArgumentOutOfRangeException>(
             () => CreateMonitorCheck(responseTimeMs: -1));
 
-        Assert.Equal("responseTimeMs", exception.ParamName);
+        Assert.Equal("latencyMs", exception.ParamName);
     }
 
     [Theory]

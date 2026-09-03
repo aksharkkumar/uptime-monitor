@@ -5,12 +5,12 @@ namespace UptimeMonitor.Domain.MonitorEvents
         #region Constructors
         // A monitor event represents a notification that is triggered when a monitor check fails or meets certain conditions. 
         // It contains information about the event, such as the monitor ID, timestamp, event type, and other relevant properties.
-        public MonitorEvent(Guid id, Guid monitorId, Guid? triggeringCheckId, DateTime timestamp, MonitorEventType type)
+        public MonitorEvent(Guid id, Guid monitorId, Guid? triggeringCheckId, DateTime triggeredAt, MonitorEventType type)
         {
             Id = id;
             MonitorId = monitorId;
             TriggeringCheckId = triggeringCheckId;
-            TriggeredAt = timestamp;
+            TriggeredAt = triggeredAt;
             Type = type;
         }
         #endregion

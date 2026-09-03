@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using UptimeMonitor.Domain;
 using UptimeMonitor.Domain.MonitorChecks;
 using UptimeMonitor.Domain.MonitorEvents;
 using UptimeMonitor.Domain.Monitors;
@@ -45,7 +48,8 @@ public sealed class PersistenceTests
 
         using var serviceProvider = builder.Services.BuildServiceProvider();
 
-        Assert.NotNull(serviceProvider.GetService<UptimeMonitorDbContext>());
+        var context = serviceProvider.GetRequiredService<UptimeMonitorDbContext>();
+        Assert.NotNull(context.Model);
 
         var healthChecks = serviceProvider
             .GetRequiredService<IOptions<HealthCheckServiceOptions>>()
@@ -61,15 +65,103 @@ public sealed class PersistenceTests
         Assert.Equal(120, settings.CooldownSeconds);
     }
 
-    [Fact(Skip = "Deferred to the entity mapping task: the current domain model cannot yet be finalized by EF Core.")]
+    [Fact]
     public void DbContextModelCanBeCreated()
     {
-        var options = new DbContextOptionsBuilder<UptimeMonitorDbContext>()
-            .UseNpgsql("Host=localhost;Database=uptime_monitor")
-            .Options;
-
-        using var context = new UptimeMonitorDbContext(options);
+        using var context = CreateContext();
 
         Assert.NotNull(context.Model);
+    }
+
+    [Fact]
+    public void EntitiesHaveExpectedScalarMappings()
+    {
+        using var context = CreateContext();
+
+        AssertEntityMapping<EndpointMonitor>(context, "Monitors");
+        AssertEntityMapping<MonitorCheck>(context, "MonitorChecks");
+        AssertEntityMapping<MonitorEvent>(context, "MonitorEvents");
+
+        var monitorType = context.Model.FindEntityType(typeof(EndpointMonitor));
+        var endpoint = monitorType?.FindProperty(nameof(EndpointMonitor.Endpoint));
+        Assert.Equal(typeof(string), endpoint?.GetTypeMapping().Converter?.ProviderClrType);
+
+        var checkType = context.Model.FindEntityType(typeof(MonitorCheck));
+        Assert.Null(checkType?.FindProperty(nameof(MonitorCheck.IsSuccess)));
+
+        var eventType = context.Model.FindEntityType(typeof(MonitorEvent));
+        Assert.Null(eventType?.FindProperty(nameof(MonitorEvent.IsResolved)));
+    }
+
+    [Fact]
+    public void MonitorEventTypeUsesNativePostgresEnum()
+    {
+        using var context = CreateContext();
+
+        var designTimeModel = context.GetService<IDesignTimeModel>().Model;
+        var postgresEnum = Assert.Single(
+            designTimeModel.GetPostgresEnums(),
+            item => item.Name == "monitor_event_type");
+
+        Assert.Equal(
+            ["monitor_down", "monitor_recovered", "slow_response", "tls_certificate_expiring"],
+            postgresEnum.Labels);
+    }
+
+    [Fact]
+    public void EntitiesHaveExpectedRelationships()
+    {
+        using var context = CreateContext();
+
+        AssertForeignKey<MonitorCheck, EndpointMonitor>(
+            context,
+            nameof(MonitorCheck.MonitorId),
+            isRequired: true);
+        AssertForeignKey<MonitorEvent, EndpointMonitor>(
+            context,
+            nameof(MonitorEvent.MonitorId),
+            isRequired: true);
+        AssertForeignKey<MonitorEvent, MonitorCheck>(
+            context,
+            nameof(MonitorEvent.TriggeringCheckId),
+            isRequired: false);
+    }
+
+    private static UptimeMonitorDbContext CreateContext()
+    {
+        var options = new DbContextOptionsBuilder<UptimeMonitorDbContext>()
+            .UseNpgsql(
+                "Host=localhost;Database=uptime_monitor",
+                npgsqlOptions => npgsqlOptions.MapEnum<MonitorEventType>("monitor_event_type"))
+            .Options;
+
+        return new UptimeMonitorDbContext(options);
+    }
+
+    private static void AssertEntityMapping<TEntity>(
+        UptimeMonitorDbContext context,
+        string expectedTableName)
+    {
+        var entityType = context.Model.FindEntityType(typeof(TEntity));
+
+        Assert.NotNull(entityType);
+        Assert.Equal(expectedTableName, entityType.GetTableName());
+        var keyProperty = Assert.Single(entityType.FindPrimaryKey()!.Properties);
+        Assert.Equal("Id", keyProperty.Name);
+        Assert.Equal(ValueGenerated.Never, keyProperty.ValueGenerated);
+    }
+
+    private static void AssertForeignKey<TDependent, TPrincipal>(
+        UptimeMonitorDbContext context,
+        string propertyName,
+        bool isRequired)
+    {
+        var dependentType = context.Model.FindEntityType(typeof(TDependent));
+        var foreignKey = Assert.Single(
+            dependentType!.GetForeignKeys(),
+            item => item.PrincipalEntityType.ClrType == typeof(TPrincipal)
+                && item.Properties.Single().Name == propertyName);
+
+        Assert.Equal(isRequired, foreignKey.IsRequired);
     }
 }
