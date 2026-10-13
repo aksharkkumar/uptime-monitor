@@ -1,7 +1,16 @@
 using UptimeMonitor.Api;
 using UptimeMonitor.Infrastructure;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(
+        new JsonStringEnumConverter(allowIntegerValues: false)
+    );
+});
 
 builder.AddServiceDefaults();
 builder.AddInfrastructure();

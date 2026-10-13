@@ -1,0 +1,12 @@
+{
+  "id": "8a32d4e1-7f69-4b52-9e0c-612a93f487b5",
+  "name": "Production API",
+  "endpoint": "https://api.example.com/health",
+  "checkIntervalSeconds": 60,
+  "timeoutSeconds": 10,
+  "expectedStatusCode": 200,
+  "isEnabled": true,
+  "createdAt": "2026-10-09T14:00:00Z",
+  "updatedAt": "2026-10-09T14:00:00Z",
+  "isActive": true
+}

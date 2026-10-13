@@ -1,0 +1,10 @@
+{
+  "id": "c92e7418-3d65-48af-b621-78df0359a4e0",
+  "monitorId": "8a32d4e1-7f69-4b52-9e0c-612a93f487b5",
+  "triggeringCheckId": "b71456fa-89cb-4d13-a07f-329ea4d8602c",
+  "triggeredAt": "2026-10-09T14:05:00Z",
+  "type": "MonitorDown",
+  "message": "Endpoint returned HTTP 503; expected HTTP 200.",
+  "isResolved": true,
+  "resolvedAt": "2026-10-09T14:08:00Z"
+}
